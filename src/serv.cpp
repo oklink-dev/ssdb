@@ -69,7 +69,6 @@ DEF_PROC(zdel);
 DEF_PROC(zincr);
 DEF_PROC(zdecr);
 DEF_PROC(zclear);
-DEF_PROC(zfix);
 DEF_PROC(zscan);
 DEF_PROC(zrscan);
 DEF_PROC(zkeys);
@@ -194,7 +193,6 @@ void SSDBServer::reg_procs(NetworkServer *net){
 	REG_PROC(zincr, "wt");
 	REG_PROC(zdecr, "wt");
 	REG_PROC(zclear, "wt");
-	REG_PROC(zfix, "wt");
 	REG_PROC(zscan, "rt");
 	REG_PROC(zrscan, "rt");
 	REG_PROC(zkeys, "rt");
@@ -290,9 +288,6 @@ SSDBServer::SSDBServer(SSDB *ssdb, SSDB *meta, const Config &conf, NetworkServer
 				}
 				std::string ip = c->get_str("ip");
 				int port = c->get_num("port");
-				if(ip == ""){
-					ip = c->get_str("host");
-				}
 				if(ip == "" || port <= 0 || port > 65535){
 					continue;
 				}
@@ -602,7 +597,7 @@ int proc_info(NetworkServer *net, Link *link, const Request &req, Response *resp
 		resp->push_back(val);
 	}
 
-	if(req.size() == 1 || req[1] == "leveldb"){
+	if(req.size() == 1 || req[1] == "rocksdb"){
 		std::vector<std::string> tmp = serv->ssdb->info();
 		for(int i=0; i<(int)tmp.size(); i++){
 			std::string block = tmp[i];

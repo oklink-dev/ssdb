@@ -6,8 +6,8 @@ found in the LICENSE file.
 #ifndef SSDB_IMPL_H_
 #define SSDB_IMPL_H_
 
-#include "leveldb/db.h"
-#include "leveldb/slice.h"
+#include "rocksdb/db.h"
+#include "rocksdb/slice.h"
 #include "../util/log.h"
 #include "../util/config.h"
 
@@ -20,16 +20,16 @@ found in the LICENSE file.
 #include "t_queue.h"
 
 inline
-static leveldb::Slice slice(const Bytes &b){
-	return leveldb::Slice(b.data(), b.size());
+static rocksdb::Slice slice(const Bytes &b){
+	return rocksdb::Slice(b.data(), b.size());
 }
 
 class SSDBImpl : public SSDB
 {
 private:
 	friend class SSDB;
-	leveldb::DB* ldb;
-	leveldb::Options options;
+	rocksdb::DB* ldb;
+	rocksdb::Options options;
 	
 	SSDBImpl();
 public:
@@ -123,7 +123,6 @@ public:
 			std::vector<std::string> *list);
 	virtual int zrlist(const Bytes &name_s, const Bytes &name_e, uint64_t limit,
 			std::vector<std::string> *list);
-	virtual int64_t zfix(const Bytes &name);
 	
 	virtual int64_t qsize(const Bytes &name);
 	// @return 0: empty queue, 1: item peeked, -1: error

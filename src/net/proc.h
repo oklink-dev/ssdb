@@ -54,9 +54,6 @@ struct ProcJob{
 	double time_wait;
 	double time_proc;
 	
-	const Request *req;
-	Response resp;
-	
 	ProcJob(){
 		result = 0;
 		serv = NULL;
@@ -65,8 +62,6 @@ struct ProcJob{
 		stime = 0;
 		time_wait = 0;
 		time_proc = 0;
-	}
-	~ProcJob(){
 	}
 };
 

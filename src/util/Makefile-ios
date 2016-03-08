@@ -7,7 +7,7 @@ IOSVERSION=$(shell defaults read $(PLATFORMSROOT)/iPhoneOS.platform/version CFBu
 SIMULATOR_SDK=$(SIMULATORROOT)/SDKs/iPhoneSimulator$(IOSVERSION).sdk
 DEVICE_SDK=$(DEVICEROOT)/SDKs/iPhoneOS$(IOSVERSION).sdk
 
-CFLAGS= -miphoneos-version-min=7.0 -stdlib=libc++ -DIOS -I. -O2 -I$(LEVELDB_PATH)/include
+CFLAGS= -miphoneos-version-min=7.0 -stdlib=libc++ -DIOS -I. -O2 -I$(rocksdb_PATH)/include
 SIMULATOR_CFLAGS=$(CFLAGS) -isysroot $(SIMULATOR_SDK) -arch i386 -arch x86_64
 DEVICE_CFLAGS=$(CFLAGS) -isysroot $(DEVICE_SDK) -arch armv6 -arch armv7 -arch armv7s -arch arm64
 

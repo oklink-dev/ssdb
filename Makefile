@@ -5,10 +5,11 @@ include build_config.mk
 
 all:
 	mkdir -p var var_slave
-	chmod u+x "${LEVELDB_PATH}/build_detect_platform"
+	chmod u+x "${LEVELDB_PATH}/build_tools/build_detect_platform"
 	chmod u+x deps/cpy/cpy
 	chmod u+x tools/ssdb-cli
-	cd "${LEVELDB_PATH}"; ${MAKE}
+#	cd "${LEVELDB_PATH}"; ${MAKE}
+	cd "${ROCKSDB_PATH}"; ${MAKE} static_lib
 	cd src/util; ${MAKE}
 	cd src/net; ${MAKE}
 	cd src/client; ${MAKE}
@@ -20,9 +21,10 @@ all:
 	
 ios:
 	cd "${LEVELDB_PATH}"; make clean; CXXFLAGS=-stdlib=libc++ ${MAKE} PLATFORM=IOS
+	cd "${ROCKSDB_PATH}"; make clean; CXXFLAGS=-stdlib=libc++ ${MAKE} static_lib PLATFORM=IOS
 	cd "${SNAPPY_PATH}"; make clean; make -f Makefile-ios
 	mkdir -p ios
-	mv ${LEVELDB_PATH}/libleveldb-ios.a ${SNAPPY_PATH}/libsnappy-ios.a ios/
+	mv ${LEVELDB_PATH}/libleveldb-ios.a ${ROCKSDB_PATH}/librocksdb-ios.a ${SNAPPY_PATH}/libsnappy-ios.a ios/
 	cd src/util; make clean; ${MAKE} -f Makefile-ios
 	cd src/ssdb; make clean; ${MAKE} -f Makefile-ios
 
@@ -59,6 +61,7 @@ clean:
 
 clean_all: clean
 	cd "${LEVELDB_PATH}"; ${MAKE} clean
+	cd "${ROCKSDB_PATH}"; ${MAKE} clean
 	rm -f ${JEMALLOC_PATH}/Makefile
 	cd "${SNAPPY_PATH}"; ${MAKE} clean
 	rm -f ${SNAPPY_PATH}/Makefile

@@ -8,12 +8,12 @@ found in the LICENSE file.
 #include <string.h>
 #include <stdarg.h>
 #include <sys/socket.h>
-#include <netdb.h>
 
 #include "link.h"
 
 #include "link_redis.cpp"
 
+#define MAX_PACKET_SIZE		128 * 1024 * 1024
 #define INIT_BUFFER_SIZE	8
 
 int Link::min_recv_buf = 8 * 1024;
@@ -80,49 +80,16 @@ void Link::noblock(bool enable){
 	}
 }
 
-// TODO: check less than 256
-static bool is_ip(const char *host){
-	int dot_count = 0;
-	int digit_count = 0;
-	for(const char *p = host; *p; p++){
-		if(*p == '.'){
-			dot_count += 1;
-			if(digit_count >= 1 && digit_count <= 3){ 
-				digit_count = 0;
-			}else{
-				return false;
-			}   
-		}else if(*p >= '0' && *p <= '9'){
-			digit_count += 1;
-		}else{
-			return false;
-		}   
-	}   
-	return dot_count == 3;
-}
 
-Link* Link::connect(const char *host, int port){
+Link* Link::connect(const char *ip, int port){
 	Link *link;
 	int sock = -1;
-
-	char ip_resolve[INET_ADDRSTRLEN];
-	if(!is_ip(host)){
-		struct hostent *hptr = gethostbyname(host);
-		for(int i=0; hptr && hptr->h_addr_list[i] != NULL; i++){
-			struct in_addr *addr = (struct in_addr *)hptr->h_addr_list[i];
-			if(inet_ntop(AF_INET, addr, ip_resolve, sizeof(ip_resolve))){
-				//printf("resolve %s: %s\n", host, ip_resolve);
-				host = ip_resolve;
-				break;
-			}
-		}
-	}
 
 	struct sockaddr_in addr;
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons((short)port);
-	inet_pton(AF_INET, host, &addr.sin_addr);
+	inet_pton(AF_INET, ip, &addr.sin_addr);
 
 	if((sock = ::socket(AF_INET, SOCK_STREAM, 0)) == -1){
 		goto sock_err;
@@ -246,6 +213,9 @@ int Link::read(){
 }
 
 int Link::write(){
+	if(output->total() == INIT_BUFFER_SIZE){
+		output->grow();
+	}
 	int ret = 0;
 	int want;
 	while((want = output->size()) > 0){
@@ -372,9 +342,6 @@ const std::vector<Bytes>* Link::recv(){
 			head += 2;
 			size -= 2;
 			parsed += 2;
-		}else if(size > 0){
-			// bad format
-			return NULL;
 		}else{
 			break;
 		}

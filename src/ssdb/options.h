@@ -23,7 +23,6 @@ public:
 	int compaction_speed;
 	std::string compression;
 	bool binlog;
-	size_t binlog_capacity;
 };
 
 #endif
