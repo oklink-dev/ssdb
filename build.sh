@@ -130,8 +130,8 @@ echo "CFLAGS += -I \"$ROCKSDB_PATH/include\"" >> build_config.mk
 
 echo "CLIBS=" >> build_config.mk
 echo "CLIBS += ${PLATFORM_CLIBS}" >> build_config.mk
-echo "CLIBS += \"/usr/lib64/libz.a" >> build_config.mk
-echo "CLIBS += \"/usr/lib64/libbz2.a" >> build_config.mk
+echo "CLIBS += \"/usr/lib64/libz.so\"" >> build_config.mk
+echo "CLIBS += \"/usr/lib64/libbz2.so\"" >> build_config.mk
 #echo "CLIBS += \"$LEVELDB_PATH/libleveldb.a\"" >> build_config.mk
 echo "CLIBS += \"$ROCKSDB_PATH/librocksdb.a\"" >> build_config.mk
 echo "CLIBS += \"$SNAPPY_PATH/.libs/libsnappy.a\"" >> build_config.mk
